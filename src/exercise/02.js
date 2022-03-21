@@ -16,62 +16,21 @@ import { createResource } from '../utils'
 // 🐨 Your goal is to refactor this traditional useEffect-style async
 // interaction to suspense with resources. Enjoy!
 
-function PokemonInfo({pokemonName}) {
-  // 💣 you're pretty much going to delete all this stuff except for the one
-  // place where 🐨 appears
-  const [state, setState] = React.useReducer((s, a) => ({...s, ...a}), {
-    pokemon: null,
-    error: null,
-    status: 'pending',
-  })
-
-  const {pokemon, error, status} = state
-
-  React.useEffect(() => {
-    let current = true
-    setState({status: 'pending'})
-    fetchPokemon(pokemonName).then(
-      p => {
-        if (current) setState({pokemon: p, status: 'success'})
-      },
-      e => {
-        if (current) setState({error: e, status: 'error'})
-      },
-    )
-    return () => (current = false)
-  }, [pokemonName])
-
-  // 💰 This will be the fallback prop of <React.Suspense />
-  if (status === 'pending') {
-    return <PokemonInfoFallback name={pokemonName} />
-  }
-
-  // 💰 This is the same thing the PokemonErrorBoundary renders
-  if (status === 'error') {
-    return (
-      <div>
-        There was an error.
-        <pre style={{whiteSpace: 'normal'}}>{error.message}</pre>
-      </div>
-    )
-  }
-
+function PokemonInfo({pokemonResource}) {
   // 💰 this is the part that will suspend
-  if (status === 'success') {
-    // 🐨 instead of accepting the pokemonName as a prop to this component
-    // you'll accept a pokemonResource.
-    // 💰 you'll get the pokemon from: pokemonResource.read()
-    // 🐨 This will be the return value of this component. You won't need it
-    // to be in this if statement anymore though!
-    return (
-      <div>
-        <div className="pokemon-info__img-wrapper">
-          <img src={pokemon.image} alt={pokemon.name} />
-        </div>
-        <PokemonDataView pokemon={pokemon} />
+  // 🐨 instead of accepting the pokemonName as a prop to this component you'll accept a pokemonResource
+  // 💰 you'll get the pokemon from: pokemonResource.read()
+  // 🐨 This will be the return value of this component. You won't need it
+  // to be in this if statement anymore though!
+  const pokemon = pokemonResource.read()
+  return (
+    <div>
+      <div className="pokemon-info__img-wrapper">
+        <img src={pokemon.image} alt={pokemon.name} />
       </div>
-    )
-  }
+      <PokemonDataView pokemon={pokemon} />
+    </div>
+  )
 }
 
 function App() {
@@ -114,7 +73,7 @@ function App() {
             onReset={() => setPokemonName('')}
           >
             <React.Suspense fallback={pokemonInfoFallback}>
-              <PokemonInfo pokemonName={pokemonName} />
+              <PokemonInfo pokemonResource={pokemonResource} />
             </React.Suspense>
           </PokemonErrorBoundary>
         ) : (
