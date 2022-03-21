@@ -42,9 +42,9 @@ function App() {
   // with fetchPokemon whenever the pokemonName changes.
   // If the pokemonName is falsy, then set the pokemon resource to null
   React.useEffect(() => {
-    if (pokemonName) {
-      setPokemonResource(createResource(fetchPokemon(pokemonName)))
-    }
+    pokemonName
+      ? setPokemonResource(createResource(fetchPokemon(pokemonName)))
+      : setPokemonResource(null)
   }, [pokemonName])
 
   function handleSubmit(newPokemonName) {
@@ -69,7 +69,7 @@ function App() {
           // extra-credit, try to make that work.
           // 📜 https://www.npmjs.com/package/react-error-boundary
           <PokemonErrorBoundary
-            resetKeys={[pokemonName]}
+            resetKeys={[pokemonResource]}
             onReset={() => setPokemonName('')}
           >
             <React.Suspense fallback={pokemonInfoFallback}>
