@@ -1,6 +1,5 @@
 // Cache resources
 // http://localhost:3000/isolated/exercise/04.js
-
 import * as React from 'react'
 import {
   PokemonInfoFallback,
@@ -9,7 +8,10 @@ import {
   PokemonErrorBoundary,
 } from '../pokemon'
 
-import { usePokemonResourceCache } from './context/pokemon-cache.context'
+import {
+  usePokemonResourceCache,
+  PokemonResourceCacheProvider,
+} from './context/pokemon-cache.context'
 
 function PokemonInfo({pokemonResource}) {
   const pokemon = pokemonResource.read()
@@ -58,24 +60,32 @@ function App() {
     <div className="pokemon-info-app">
       <PokemonForm pokemonName={pokemonName} onSubmit={handleSubmit} />
       <hr />
-      <div className={`pokemon-info ${isPending ? 'pokemon-loading' : ''}`}>
-        {pokemonResource ? (
-          <PokemonErrorBoundary
-            onReset={handleReset}
-            resetKeys={[pokemonResource]}
-          >
-            <React.Suspense
-              fallback={<PokemonInfoFallback name={pokemonName} />}
+        <div className={`pokemon-info ${isPending ? 'pokemon-loading' : ''}`}>
+          {pokemonResource ? (
+            <PokemonErrorBoundary
+              onReset={handleReset}
+              resetKeys={[pokemonResource]}
             >
-              <PokemonInfo pokemonResource={pokemonResource} />
-            </React.Suspense>
-          </PokemonErrorBoundary>
-        ) : (
-          'Submit a pokemon'
-        )}
-      </div>
+              <React.Suspense
+                fallback={<PokemonInfoFallback name={pokemonName} />}
+              >
+                <PokemonInfo pokemonResource={pokemonResource} />
+              </React.Suspense>
+            </PokemonErrorBoundary>
+          ) : (
+            'Submit a pokemon'
+          )}
+        </div>
     </div>
   )
 }
 
-export default App
+function AppWithProvider(props) {
+  return (
+    <PokemonResourceCacheProvider>
+      <App {...props} />
+    </PokemonResourceCacheProvider>
+  )
+}
+
+export default AppWithProvider
