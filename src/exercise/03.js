@@ -34,7 +34,10 @@ const DEPRECATED_SUSPENSE_CONFIG = {
   // Consequently, the longer the timeoutMs is, the longer the current pokemon remains
   // faded. If the request does not finish when timeout ends, then, React.suspense
   // takes over and shows "Loading pokemon...", until the data is available or fails.
-  timeoutMs: 2000
+  timeoutMs: 2000,
+  // If we are pending for 300ms (slightly less than current CSS rule), then stay pending up to 700ms -- Avoids flash on slower devices due to the fix we did in #3.1.
+  busyDelayMs: 300,
+  busyMinDurationMs: 700,
 }
 
 function createPokemonResource(pokemonName) {
