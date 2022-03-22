@@ -38,13 +38,9 @@ const DEPRECATED_SUSPENSE_CONFIG = {
 }
 
 function createPokemonResource(pokemonName) {
-  // 🦉 once you've finished the exercise, play around with the delay...
-  // delay is just a mock param of fetchPokemon impl. to slow-down or speed up the request
-  let delay = 5000
-
   // shows busy indicator for a split second
   // 💯 this is what the extra credit improves
-  // delay = 200
+  const delay = 100
   return createResource(fetchPokemon(pokemonName, delay))
 }
 
@@ -76,19 +72,11 @@ function App() {
     setPokemonName('')
   }
 
-  const pokemonInfoStyles = {
-    opacity: isPendingTransition ? 0.6 : 1.0
-  }
-
   return (
     <div className="pokemon-info-app">
       <PokemonForm pokemonName={pokemonName} onSubmit={handleSubmit} />
       <hr />
-      {/*
-        🐨 add inline styles here to set the opacity to 0.6 if the
-        useTransition above is pending
-      */}
-      <div className="pokemon-info" style={pokemonInfoStyles}>
+      <div className={`pokemon-info ${isPendingTransition ? 'pokemon-loading' : ''}`}>
         {pokemonResource ? (
           <PokemonErrorBoundary
             onReset={handleReset}
